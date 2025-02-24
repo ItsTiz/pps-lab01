@@ -42,6 +42,14 @@ class SimpleBankAccountTest {
     }
 
     @Test
+    void testNoEmptyWithdraw(){
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> bankAccount.withdraw(accountHolder.getId(), 0)
+        );
+    }
+
+    @Test
     void testWithdraw() {
         bankAccount.deposit(accountHolder.getId(), DEPOSIT_AMOUNT);
         bankAccount.withdraw(accountHolder.getId(), WITHDRAWAL_AMOUNT);
