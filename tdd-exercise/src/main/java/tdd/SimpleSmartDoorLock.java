@@ -6,6 +6,8 @@ public class SimpleSmartDoorLock implements SmartDoorLock{
 
     private LockStates lockState;
 
+    private static final int PIN_LENGTH = 4;
+
     private enum LockStates {
         LOCKED,
         UNLOCKED,
@@ -18,12 +20,14 @@ public class SimpleSmartDoorLock implements SmartDoorLock{
     }
 
     @Override
-    public void setPin(String pin) {
+    public void setPin(String pin) throws IllegalStateException, IllegalArgumentException {
+        if(lockState != LockStates.UNLOCKED) throw new IllegalStateException();
+        if(pin.length() != PIN_LENGTH) throw new IllegalArgumentException();
         this.pin = pin;
     }
 
     @Override
-    public void unlock(int pin) {
+    public void unlock(String pin) {
 
     }
 

@@ -24,7 +24,7 @@ public interface SmartDoorLock {
      *
      * @param pin The PIN entered by the user.
      */
-    void unlock(int pin);
+    void unlock(String pin);
 
     /**
      * Locks the door.
