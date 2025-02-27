@@ -73,6 +73,17 @@ public class SmartDoorLockTest {
     }
 
     @Test
+    public void testUnlockAfterBlocked(){
+        doorLock.setPin(TEST_PIN);
+        doorLock.lock();
+        while(doorLock.getFailedAttempts() < doorLock.getMaxAttempts()) {
+            doorLock.unlock(WRONG_PIN);
+        }
+
+        assertThrows(IllegalStateException.class, () -> doorLock.unlock(TEST_PIN));
+    }
+
+    @Test
     public void testLockReset(){
         doorLock.setPin(TEST_PIN);
         doorLock.lock();

@@ -32,7 +32,8 @@ public class SimpleSmartDoorLock implements SmartDoorLock{
     }
 
     @Override
-    public void unlock(String pin) {
+    public void unlock(String pin) throws IllegalStateException {
+        if(isBlocked()) throw new IllegalStateException();
         if(this.pin.equals(pin)){ this.lockState = LockStates.UNLOCKED;}
         else { this.currentFailedAttempts++;}
         if(this.currentFailedAttempts >= MAX_ATTEMPTS && this.lockState != LockStates.BLOCKED) {
