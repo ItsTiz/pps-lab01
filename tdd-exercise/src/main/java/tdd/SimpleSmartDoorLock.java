@@ -6,7 +6,13 @@ public class SimpleSmartDoorLock implements SmartDoorLock{
 
     private LockStates lockState;
 
+    private int currentFailedAttempts;
+
     private static final int PIN_LENGTH = 4;
+
+    private static final String PIN_PATTERN = "[0-9]{"+PIN_LENGTH+"}";
+
+    private static final int MAX_ATTEMPTS = 3;
 
     private enum LockStates {
         LOCKED,
@@ -17,23 +23,28 @@ public class SimpleSmartDoorLock implements SmartDoorLock{
     SimpleSmartDoorLock(){
         this.pin = "";
         this.lockState = LockStates.UNLOCKED;
+        this.currentFailedAttempts = 0;
     }
 
     @Override
     public void setPin(String pin) throws IllegalStateException, IllegalArgumentException {
-        if(lockState != LockStates.UNLOCKED) throw new IllegalStateException();
-        if(pin.length() != PIN_LENGTH) throw new IllegalArgumentException();
+        if(lockState != LockStates.UNLOCKED){ throw new IllegalStateException();}
+        if(!pin.matches(PIN_PATTERN)){ throw new IllegalArgumentException();}
         this.pin = pin;
     }
 
     @Override
     public void unlock(String pin) {
-
+        if(this.pin.equals(pin)){ this.lockState = LockStates.UNLOCKED;}
+        else { this.currentFailedAttempts++;}
+        if(this.currentFailedAttempts >= MAX_ATTEMPTS && this.lockState != LockStates.BLOCKED) {
+            this.lockState = LockStates.BLOCKED;
+        }
     }
 
     @Override
     public void lock() throws IllegalStateException {
-        if(this.pin.isEmpty()) throw new IllegalStateException();
+        if(this.pin.isEmpty()) {throw new IllegalStateException();}
         this.lockState = LockStates.LOCKED;
     }
 
@@ -44,17 +55,17 @@ public class SimpleSmartDoorLock implements SmartDoorLock{
 
     @Override
     public boolean isBlocked() {
-        return false;
+        return this.lockState == LockStates.BLOCKED;
     }
 
     @Override
     public int getMaxAttempts() {
-        return 0;
+        return MAX_ATTEMPTS;
     }
 
     @Override
     public int getFailedAttempts() {
-        return 0;
+        return this.currentFailedAttempts;
     }
 
     @Override
