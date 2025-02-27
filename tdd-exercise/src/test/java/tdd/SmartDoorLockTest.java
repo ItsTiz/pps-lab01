@@ -54,7 +54,7 @@ public class SmartDoorLockTest {
     }
 
     @Test
-    public void testUnlockWithWrongPinMultipleTimes(){
+    public void testBlockedAfterWrongPinMultipleTimes(){
         doorLock.setPin(TEST_PIN);
         doorLock.lock();
         while(doorLock.getFailedAttempts() < doorLock.getMaxAttempts()) {
