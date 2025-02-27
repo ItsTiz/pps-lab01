@@ -21,9 +21,7 @@ public class SimpleSmartDoorLock implements SmartDoorLock{
     }
 
     SimpleSmartDoorLock(){
-        this.pin = "";
-        this.lockState = LockStates.UNLOCKED;
-        this.currentFailedAttempts = 0;
+       reset();
     }
 
     @Override
@@ -70,6 +68,8 @@ public class SimpleSmartDoorLock implements SmartDoorLock{
 
     @Override
     public void reset() {
-
+        this.pin = "";
+        this.lockState = LockStates.UNLOCKED;
+        this.currentFailedAttempts = 0;
     }
 }

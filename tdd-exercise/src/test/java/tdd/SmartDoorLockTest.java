@@ -9,7 +9,7 @@ public class SmartDoorLockTest {
 
     private static final String TEST_PIN = "7529";
     private static final String WRONG_PIN = "2149";
-    private static final String ILLEGAL_PIN = "14975";
+    private static final String ILLEGAL_PIN = "1#49c?75";
 
     private SmartDoorLock doorLock;
 
@@ -54,6 +54,15 @@ public class SmartDoorLockTest {
     }
 
     @Test
+    public void testUnlockOneFailedAttempt(){
+        doorLock.setPin(TEST_PIN);
+        doorLock.lock();
+        doorLock.unlock(WRONG_PIN);
+        doorLock.unlock(TEST_PIN);
+        assertFalse(doorLock.isLocked());
+    }
+
+    @Test
     public void testBlockedAfterWrongPinMultipleTimes(){
         doorLock.setPin(TEST_PIN);
         doorLock.lock();
@@ -63,7 +72,19 @@ public class SmartDoorLockTest {
         assertTrue(doorLock.isBlocked());
     }
 
-    //@Test
+    @Test
+    public void testLockReset(){
+        doorLock.setPin(TEST_PIN);
+        doorLock.lock();
+        doorLock.unlock(WRONG_PIN);
+        doorLock.reset();
+        assertAll(
+                () -> assertThrows(IllegalStateException.class, () -> doorLock.lock()),
+                () -> assertFalse(doorLock.isLocked()),
+                () -> assertEquals(0, doorLock.getFailedAttempts())
+        );
+
+    }
 
 
 }
