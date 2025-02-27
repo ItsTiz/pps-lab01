@@ -13,6 +13,24 @@ public class SmartDoorLockTest {
 
     private SmartDoorLock doorLock;
 
+    private void setPinAndLock(SmartDoorLock doorLock){
+        doorLock.setPin(SmartDoorLockTest.TEST_PIN);
+        doorLock.lock();
+    }
+
+
+    private void blockLock(SmartDoorLock doorLock){
+        setPinAndLock(doorLock);
+        while(doorLock.getFailedAttempts() < doorLock.getMaxAttempts()) {
+            doorLock.unlock(WRONG_PIN);
+        }
+    }
+
+    private void tryWrongPinOneTime(SmartDoorLock doorLock){
+        setPinAndLock(doorLock);
+        doorLock.unlock(WRONG_PIN);
+    }
+
     @BeforeEach
     public void init(){
         doorLock = new SimpleSmartDoorLock();
@@ -20,8 +38,7 @@ public class SmartDoorLockTest {
 
     @Test
     public void testLock() {
-        doorLock.setPin(TEST_PIN);
-        doorLock.lock();
+        setPinAndLock(doorLock);
         assertTrue(doorLock.isLocked());
     }
 
@@ -39,55 +56,59 @@ public class SmartDoorLockTest {
 
     @Test
     public void testUnlockWithCorrectPin(){
-        doorLock.setPin(TEST_PIN);
-        doorLock.lock();
+        setPinAndLock(doorLock);
         doorLock.unlock(TEST_PIN);
         assertFalse(doorLock.isLocked());
     }
 
     @Test
-    public void testUnlockWithWrongPin(){
+    public void testUnlockWithOpenLock(){
         doorLock.setPin(TEST_PIN);
-        doorLock.lock();
-        doorLock.unlock(WRONG_PIN);
+        assertThrows(IllegalStateException.class,
+                () -> doorLock.unlock(TEST_PIN));
+    }
+
+    @Test
+    public void testLockAlreadyLocked(){
+        setPinAndLock(doorLock);
+        assertThrows(IllegalStateException.class,
+                () -> doorLock.lock());
+    }
+
+    @Test
+    public void testUnlockWithWrongPin(){
+        tryWrongPinOneTime(doorLock);
         assertTrue(doorLock.isLocked());
     }
 
     @Test
     public void testUnlockOneFailedAttempt(){
-        doorLock.setPin(TEST_PIN);
-        doorLock.lock();
-        doorLock.unlock(WRONG_PIN);
+        tryWrongPinOneTime(doorLock);
         doorLock.unlock(TEST_PIN);
         assertFalse(doorLock.isLocked());
     }
 
     @Test
-    public void testBlockedAfterWrongPinMultipleTimes(){
-        doorLock.setPin(TEST_PIN);
-        doorLock.lock();
-        while(doorLock.getFailedAttempts() < doorLock.getMaxAttempts()) {
-            doorLock.unlock(WRONG_PIN);
-        }
+    public void testBlocked(){
+        blockLock(doorLock);
         assertTrue(doorLock.isBlocked());
     }
 
     @Test
-    public void testUnlockAfterBlocked(){
-        doorLock.setPin(TEST_PIN);
-        doorLock.lock();
-        while(doorLock.getFailedAttempts() < doorLock.getMaxAttempts()) {
-            doorLock.unlock(WRONG_PIN);
-        }
+    public void testLockAfterBlocked(){
+        blockLock(doorLock);
+        assertThrows(IllegalStateException.class, () -> doorLock.lock());
+    }
 
+    @Test
+    public void testUnlockAfterBlocked(){
+        blockLock(doorLock);
         assertThrows(IllegalStateException.class, () -> doorLock.unlock(TEST_PIN));
     }
 
     @Test
-    public void testLockReset(){
-        doorLock.setPin(TEST_PIN);
-        doorLock.lock();
-        doorLock.unlock(WRONG_PIN);
+    public void testReset(){
+        tryWrongPinOneTime(doorLock);
         doorLock.reset();
         assertAll(
                 () -> assertThrows(IllegalStateException.class, () -> doorLock.lock()),
