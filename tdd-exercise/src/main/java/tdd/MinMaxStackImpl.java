@@ -1,54 +1,68 @@
 package tdd;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Stack;
+import java.util.function.BiPredicate;
 
 public class MinMaxStackImpl implements MinMaxStack{
 
-    private final List<Integer> stack;
+    private final Stack<Integer> stack;
 
-    private Integer minValue = 0;
-    private Integer maxValue = 0;
+    private final Stack<Integer> minStack;
+    private final Stack<Integer> maxStack;
 
     MinMaxStackImpl() {
-        this.stack = new ArrayList<>();
+
+        this.stack = new Stack<>();
+        this.minStack = new Stack<>();
+        this.maxStack = new Stack<>();
+
     }
 
-    private int lastElementIndex() throws IllegalStateException{
-        if(isEmpty()) throw new IllegalStateException();
-        return this.stack.size()-1;
+    private void pushOntoStack(Stack<Integer> stack, int value, BiPredicate<Integer, Integer> condition) {
+        if(stack == null) {
+            throw new IllegalArgumentException();
+        }
+        if (stack.isEmpty() || condition.test(value, stack.peek())) {
+            stack.push(value);
+        }
     }
 
-    @Override
     public void push(int value) {
-        if(isEmpty()){ this.minValue = this.maxValue = value;}
-        if(value < minValue){ this.minValue = value;}
-        if(value > maxValue){ this.maxValue = value;}
-        this.stack.add(value);
+        stack.push(value);
+        pushOntoStack(minStack, value, (v, top) -> v < top);
+        pushOntoStack(maxStack, value, (v, top) -> v > top);
     }
+
 
     @Override
     public int pop() throws IllegalStateException {
         if(isEmpty()) throw new IllegalStateException();
-        return this.stack.remove(lastElementIndex());
+        int poppedValue = this.stack.pop();
+        if(poppedValue == minStack.peek()) {
+            minStack.pop();
+        }
+        if(poppedValue == maxStack.peek()) {
+            maxStack.pop();
+        }
+        return poppedValue;
     }
 
     @Override
     public int peek() {
         if(isEmpty()) throw new IllegalStateException();
-        return this.stack.get(lastElementIndex());
+        return this.stack.peek();
     }
 
     @Override
     public int getMin() throws IllegalStateException{
         if(!isEmpty())
-            return this.minValue;
+            return this.minStack.peek();
         throw new IllegalStateException();
     }
 
     @Override
     public int getMax() {
         if(!isEmpty())
-            return this.maxValue;
+            return this.maxStack.peek();
         throw new IllegalStateException();
     }
 

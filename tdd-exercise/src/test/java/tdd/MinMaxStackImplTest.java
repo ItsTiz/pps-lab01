@@ -6,17 +6,23 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
-import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class MinMaxStackImplTest {
+    private static final List<Integer> SAMPLE_LIST = List.of(1,2,3,4,5);
 
     public static final int SAMPLE_VALUE = 5;
+
     private MinMaxStack stack;
 
-    private static final List<Integer> SAMPLE_LIST = List.of(1,2,3,4,5);
+
+    private void pushAllOntoStack(List<Integer> list) {
+        if(stack == null) {
+            throw new IllegalArgumentException();
+        }
+        list.forEach(this.stack::push);
+    }
 
     @BeforeEach
     public void init(){
@@ -43,7 +49,7 @@ class MinMaxStackImplTest {
         List<Integer> reversedValues = new ArrayList<>(SAMPLE_LIST);
         Collections.reverse(reversedValues);
 
-        SAMPLE_LIST.forEach((e) -> stack.push(e));
+        pushAllOntoStack(SAMPLE_LIST);
 
         while(!stack.isEmpty()){
             poppedValues.add(stack.pop());
@@ -68,13 +74,13 @@ class MinMaxStackImplTest {
 
     @Test
     public void testMinValue() {
-        SAMPLE_LIST.forEach((e) -> stack.push(e));
+        pushAllOntoStack(SAMPLE_LIST);
         assertEquals(Collections.min(SAMPLE_LIST),stack.getMin());
     }
 
     @Test
     public void testMaxValue() {
-        SAMPLE_LIST.forEach((e) -> stack.push(e));
+        pushAllOntoStack(SAMPLE_LIST);
         assertEquals(Collections.max(SAMPLE_LIST),stack.getMax());
     }
 
@@ -90,6 +96,35 @@ class MinMaxStackImplTest {
         assertThrows(
                 IllegalStateException.class,
                 () -> stack.getMax());
+    }
+
+    @Test
+    public void testMinValueAfterMinValuePopped(){
+        List<Integer> sampleListCopy = new ArrayList<>(SAMPLE_LIST);
+        Collections.reverse(sampleListCopy);
+        pushAllOntoStack(sampleListCopy);
+        sampleListCopy.remove(Collections.min(sampleListCopy));
+
+        stack.pop();
+        assertEquals(
+                Collections.min(sampleListCopy),
+                stack.getMin()
+        );
+
+    }
+
+    @Test
+    public void testMaxValueAfterMaxValuePopped(){
+        pushAllOntoStack(SAMPLE_LIST);
+
+        List<Integer> sampleListCopy = new ArrayList<>(SAMPLE_LIST);
+        sampleListCopy.remove(Collections.max(sampleListCopy));
+
+        stack.pop();
+        assertEquals(
+                Collections.max(sampleListCopy),
+                stack.getMax());
+
     }
 
 
