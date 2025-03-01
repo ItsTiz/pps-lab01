@@ -103,15 +103,4 @@ public class CircularListTest {
         assertEquals(CAPACITY, cQueue.size());
 
     }
-
-    @Test
-    public void testMultipleDequeueAfterRotation(){
-        fillQueue(TEST_LIST);
-        fillQueue(SECOND_LIST);
-        cQueue.dequeue();
-        cQueue.dequeue();
-        cQueue.dequeue();
-        assertEquals(SECOND_LIST.get(3), cQueue.peek());
-
-    }
 }

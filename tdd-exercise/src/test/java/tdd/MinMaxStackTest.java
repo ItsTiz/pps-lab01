@@ -10,7 +10,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MinMaxStackTest {
-    private static final List<Integer> SAMPLE_LIST = List.of(1,2,3,4,5);
+    private static final List<Integer> SAMPLE_LIST = List.of(5,9,7,1,2,3,6,4,8,8,4,23);
 
     public static final int SAMPLE_VALUE = 5;
 
@@ -22,6 +22,12 @@ class MinMaxStackTest {
             throw new IllegalArgumentException();
         }
         list.forEach(this.stack::push);
+    }
+
+    private void popUntilValueOnTop(int value, List<Integer> list) {
+        while(stack.peek() != value) {
+            list.remove((Integer) stack.pop());
+        }
     }
 
     @BeforeEach
@@ -100,12 +106,14 @@ class MinMaxStackTest {
 
     @Test
     public void testMinValueAfterMinValuePopped(){
+        pushAllOntoStack(SAMPLE_LIST);
+
         List<Integer> sampleListCopy = new ArrayList<>(SAMPLE_LIST);
-        Collections.reverse(sampleListCopy);
-        pushAllOntoStack(sampleListCopy);
         sampleListCopy.remove(Collections.min(sampleListCopy));
 
+        popUntilValueOnTop(stack.getMin(), sampleListCopy);
         stack.pop();
+
         assertEquals(
                 Collections.min(sampleListCopy),
                 stack.getMin()
@@ -120,7 +128,9 @@ class MinMaxStackTest {
         List<Integer> sampleListCopy = new ArrayList<>(SAMPLE_LIST);
         sampleListCopy.remove(Collections.max(sampleListCopy));
 
+        popUntilValueOnTop(stack.getMax(), sampleListCopy);
         stack.pop();
+
         assertEquals(
                 Collections.max(sampleListCopy),
                 stack.getMax());
