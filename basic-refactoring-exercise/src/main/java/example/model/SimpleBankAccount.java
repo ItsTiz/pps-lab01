@@ -39,8 +39,6 @@ public class SimpleBankAccount implements BankAccount {
         }
     }
 
-    //private boolean isBalanceEmpty(){return this.balance == 0;}
-
     private boolean isWithdrawAllowed(final double amount) throws IllegalArgumentException{
         if(amount == 0) throw new IllegalArgumentException();
         return this.balance >= amount + WITHDRAWAL_FEE;
