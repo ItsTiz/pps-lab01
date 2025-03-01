@@ -25,10 +25,9 @@ public interface CircularQueue {
     /**
      * Removes an integer from the queue.
      *
-     * @return The element to be removed.
      * @throws IllegalStateException if the queue is empty.
      */
-    int dequeue();
+    void dequeue();
 
     /**
      * Retrieves, but does not remove, the first element of the queue.
@@ -51,4 +50,11 @@ public interface CircularQueue {
      * @return true if the queue is full, false otherwise.
      */
     boolean isFull();
+
+    /**
+     * Gets the number of elements currently in the queue.
+     *
+     * @return The size of the queue.
+     */
+    int size();
 }

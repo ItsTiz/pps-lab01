@@ -9,7 +9,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MinMaxStackImplTest {
+class MinMaxStackTest {
     private static final List<Integer> SAMPLE_LIST = List.of(1,2,3,4,5);
 
     public static final int SAMPLE_VALUE = 5;

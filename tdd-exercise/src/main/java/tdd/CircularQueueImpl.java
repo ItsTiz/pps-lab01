@@ -6,24 +6,35 @@ public class CircularQueueImpl implements CircularQueue {
 
     private final List<Integer> queue;
 
+    private int head;
+    private int tail;
+
     private final int capacity;
 
     CircularQueueImpl(int capacity){
         queue = new ArrayList<>();
+        head = tail = 0;
         this.capacity = capacity;
     }
 
     @Override
     public void enqueue(int value) {
-        queue.add(value);
+        if(isFull()){
+            queue.set(tail, value);
+            head = (head + 1) % capacity;
+        }else {
+            queue.add(value);
+        }
+        tail = (tail + 1) % capacity;
+
     }
 
     @Override
-    public int dequeue() throws IllegalStateException{
+    public void dequeue() throws IllegalStateException{
         if(isEmpty()) {
             throw new IllegalStateException();
         }
-        return queue.remove(0);
+        queue.remove(head);
     }
 
     @Override
@@ -31,7 +42,7 @@ public class CircularQueueImpl implements CircularQueue {
         if(isEmpty()) {
             throw new IllegalStateException();
         }
-        return queue.get(0);
+        return queue.get(head);
     }
 
     @Override
@@ -42,5 +53,10 @@ public class CircularQueueImpl implements CircularQueue {
     @Override
     public boolean isFull() {
         return queue.size() == capacity;
+    }
+
+    @Override
+    public int size() {
+        return queue.size();
     }
 }
