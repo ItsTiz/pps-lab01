@@ -80,6 +80,15 @@ public class CircularListTest {
     }
 
     @Test
+    public void testEnqueueDequeueUntilEmpty() {
+        fillQueue(TEST_LIST);
+        while (!cQueue.isEmpty()) {
+            cQueue.dequeue();
+        }
+        assertTrue(cQueue.isEmpty());
+    }
+
+    @Test
     public void testRotateWholeQueue(){
         fillQueue(TEST_LIST);
         fillQueue(SECOND_LIST);
